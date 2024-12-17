@@ -1,102 +1,207 @@
 #include<iostream>
 #include<fstream>
+#include<stdlib.h>
+#include<time.h>
 using namespace std;
 
 class temp{
+    int accNo;
+	char name[25];
+	char Mname[25];
+	char cnic[25];
+	char P_no[25];
+	char email[25];
+	float amount;
+	int newAmount;
+    fstream file,file1;
 
-    string id,name,author,search;
-    fstream file;
     public:
-    void addBook();
-    void showAll();
-    void extractBook();
+	int search;
 
-}obj;
+    void createAccount(void);   // declaration of create account function
+    void depositAmount(void);   // declaration of depositAmount function
+    void withdrawAmount(void);  // declaration of withdrawAmount function
+    void checkInfo(void);       // declaration of checkInfo function
+};
 
 int main(){
 
+    temp obj;
     char choice;
-    cout<<"----------------------------------"<<endl;
-    cout<<"1-Show All Books"<<endl;
-    cout<<"2-Extract Book"<<endl;
-    cout<<"3-Add books(ADMIN)"<<endl;
-    cout<<"4-Exit"<<endl;
-    cout<<"----------------------------------"<<endl;
-    cout<<"Enter Your Choice :: ";
-    cin>>choice;
 
+    cout<<"\n\n\n\t\t......:::Bahram's Bank:::......";
+	cout<<"\n\t\t:: press 1 to Login  Account :: ";
+	cout<<"\n\t\t:: press 2 to Create Account ::";
+	cout<<"\n\t\t:: press 0 to Exit           ::";
+	cout<<"\n\t\t:: ......................... ::\n\t\t\t\t";
+	cin>>choice;
+    
     switch(choice){
         case '1':
-            cin.ignore();
-            obj.showAll();
+            cout<<"Enter your account no :: ";
+	        cin>>obj.search;
+        while(1){
+
+            cout<<"\n\n\n\t\t.......:::Bahram's Bank:::.......";
+            cout<<"\n\t\t:: press 1 to Deposit  Amount  :: ";
+            cout<<"\n\t\t:: press 2 to Withdraw Amount  ::";
+            cout<<"\n\t\t:: press 3 to Check    Info    ::";
+            cout<<"\n\t\t:: press 0 to Exit     Menu    ::";
+            cout<<"\n\t\t:: ........................... ::\n\t\t\t\t";
+            cin>>choice;
+
+            switch (choice)
+            {
+            case '1':
+                obj.depositAmount();
+            break;
+            case '2':
+                obj.withdrawAmount();
+            break;
+            case '3':
+                obj.checkInfo();
+            break;
+            case '0':
+                return 0;
+            break;
+            default:
+                cout<<"Invalid Choice...!";
+            break;
+            }
+            system("pause");
+            system("cls");
+        }
         break;
         case '2':
-            cin.ignore();
-            obj.extractBook();
+            obj.createAccount();
         break;
-        case '3':
-            cin.ignore();
-            obj.addBook();
+        case '0':
+            system("exit");
         break;
-        case '4':
-            return 0;
+        default :
+            cout<<"\n Invalid choice...! ";
         break;
-        default:
-            cout<<"Invalid Choice...!";
     }
-    
-
     return 0;
 }
-void temp :: addBook(){
-    cout<<"\nEnter Book ID :: ";
-    getline(cin,id);
-    cout<<"Enter Book Name :: ";
-    getline(cin,name);
-    cout<<"Enter Book's Author name :: ";
-    getline(cin,author);
+// Defination of create account function
+void temp :: createAccount(){
 
-    file.open("bookData.txt",ios :: out | ios :: app);
-    file<<id<<"*"<<name<<"*"<<author<<endl;
-    file.close();
+    srand(time(0));
+	accNo=rand()*rand()+rand()*rand();
+	
+	cout<<"Enter Your name :: ";
+	cin>>name;
+	
+	cout<<"Enter Your Mother name :: ";
+	cin>>Mname;
+
+	cout<<"Enter Your cnic :: ";
+	cin>>cnic;
+	
+	cout<<"Enter Your phone no. :: ";
+	cin>>P_no;
+	
+	cout<<"Enter Your email :: ";
+	cin>>email;
+	
+	cout<<"Enter Your amount :: ";
+	cin>>amount;
+	
+	cout<<endl<<accNo<<" This is your account number... \n";
+	cout<<"Please save it \n\n";
+	
+	file.open("data.txt",ios::out|ios::app);
+	file<<accNo<<"\t"<<name<<"\t"<<Mname<<"\t"<<cnic<<"\t"<<P_no<<"\t"<<email<<"\t"<<amount<<endl;
+	file.close();
 }
-void temp :: showAll(){
-    file.open("bookData.txt",ios :: in);
-    getline(file,id,'*');
-    getline(file,name,'*');
-    getline(file,author,'\n');
-        cout<<"\n\n";
-        cout<<"\t\t Book Id \t\t\t Book Name \t\t\t Author's Name"<<endl;
-    while(!file.eof()){
-        cout<<"\t\t "<<id<<" \t\t\t\t "<<name<<" \t\t\t "<<author<<endl;
+// Defination of depositAmount function
+void temp :: depositAmount(){
+   
+	cout<<"Enter amount to deposit :: ";
+	cin>>newAmount;
 
-        getline(file,id,'*');
-    getline(file,name,'*');
-    getline(file,author,'\n');
-    }
-    file.close();
+	file.open("data.txt",ios::in);
+	file1.open("data1.txt",ios::out|ios::app);
+	file>>accNo>>name>>Mname>>cnic>>P_no>>email>>amount;
+	
+	while(!file.eof()) {
+		if(accNo==search){
+			cout<<"\ncurrent amount :: "<<amount;
+			amount=amount + newAmount;
+			cout<<"\nupdated amount :: "<<amount<<endl;
+			file1<<accNo<<"\t"<<name<<"\t"<<Mname<<"\t"<<cnic<<"\t"<<P_no<<"\t"<<email<<"\t"<<amount<<endl;
+		}else{
+			file1<<accNo<<"\t"<<name<<"\t"<<Mname<<"\t"<<cnic<<"\t"<<P_no<<"\t"<<email<<"\t"<<amount<<endl;
+		}
+		file>>accNo>>name>>Mname>>cnic>>P_no>>email>>amount;
+	}
+	
+	file.close();
+	file1.close();
+	remove("data.txt");
+	rename("data1.txt","data.txt");
 }
-void temp :: extractBook(){
+// Defination of withdrawAmount function
+void temp :: withdrawAmount(){
+    
+	cout<<"Enter amount to withdraw :: ";
+	cin>>newAmount;
 
-    showAll();
-    cout<<"Enter Book Id :: ";
-    getline(cin,search);
-
-    file.open("bookData.txt",ios :: in);
-    getline(file,id,'*');
-    getline(file,name,'*');
-    getline(file,author,'\n');
-
-    cout<<"\n\n";
-    cout<<"\t\t Book Id \t\t\t Book Name \t\t\t Author's Name"<<endl;
-    while(!file.eof()){
-        if(search == id){
-            cout<<"\t\t "<<id<<" \t\t\t "<<name<<" \t\t\t "<<author<<endl;
-            cout<<"Book Extracted Successfully...!";
-        }
-    getline(file,id,'*');
-    getline(file,name,'*');
-    getline(file,author,'\n');
-    }
-    file.close();
+	file.open("data.txt",ios::in);
+	file1.open("data1.txt",ios::out|ios::app);
+	file>>accNo>>name>>Mname>>cnic>>P_no>>email>>amount;
+	
+	while(!file.eof()) {
+		if(accNo==search){
+			cout<<"\ncurrent amount :: "<<amount;
+			amount=amount - newAmount;
+			cout<<"\nupdated amount :: "<<amount<<endl;
+			file1<<accNo<<"\t"<<name<<"\t"<<Mname<<"\t"<<cnic<<"\t"<<P_no<<"\t"<<email<<"\t"<<amount<<endl;
+		}else{
+			file1<<accNo<<"\t"<<name<<"\t"<<Mname<<"\t"<<cnic<<"\t"<<P_no<<"\t"<<email<<"\t"<<amount<<endl;
+		}
+		file>>accNo>>name>>Mname>>cnic>>P_no>>email>>amount;
+	}
+	
+	file.close();
+	file1.close();
+	remove("data.txt");
+	rename("data1.txt","data.txt");
 }
+// Defination of checkInfo function
+void temp :: checkInfo(){
+    
+	
+	fstream file;
+	file.open("data.txt",ios::in);
+	if(!file){
+		cout<<"File opening error !";
+	}
+	file>>accNo>>name>>Mname>>cnic>>P_no>>email>>amount;
+	while(!file.eof()){
+		if(accNo==search){
+            cout<<"\n---------------------------\n";
+            cout<<endl<<"\t::: account Number ::: ";
+            cout<<"\t   "<<accNo<<endl;
+            cout<<"\t::: User Name      ::: ";
+            cout<<"\t   "<<name<<"\n";
+            cout<<"\t::: Mother Name    ::: ";
+            cout<<"\t   "<<Mname<<"\n";
+            cout<<"\t::: CNIC number    ::: ";
+            cout<<"\t   "<<cnic<<"\n";
+            cout<<"\t::: Phone Number   ::: ";
+            cout<<"\t   "<<P_no<<"\n";
+            cout<<"\t::: Email          ::: ";
+            cout<<"\t   "<<email<<"\n";
+            cout<<"\t::: Current amount ::: ";
+            cout<<"\t   "<<amount<<endl;
+            cout<<"\n---------------------------\n\n";
+		
+	    }
+		file>>accNo>>name>>Mname>>cnic>>P_no>>email>>amount;
+	}
+	
+	file.close();
+}
+707523534
